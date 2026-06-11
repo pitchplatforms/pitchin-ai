@@ -11,8 +11,9 @@ graphify-out/
 # Ralph worktrees — ephemeral slice checkouts
 ralph/
 
-# Local Claude Code tooling & session data
-.claude/
+# Local Claude Code tooling & session data — but share the skill config
+.claude/*
+!.claude/skill-config.json
 
 # Ad-hoc working folders
 asset-servicing-product/

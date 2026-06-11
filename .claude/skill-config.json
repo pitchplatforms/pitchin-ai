@@ -1,0 +1,40 @@
+{
+  "tracker": { "type": "github", "repo": "pitchplatforms/pitchin-issues" },
+  "scope_dir": "docs/scope",
+  "triage_labels": {
+    "needs-triage": "needs-triage",
+    "needs-info": "needs-info",
+    "ready-for-agent": "ready-for-agent",
+    "ready-for-human": "ready-for-human",
+    "wontfix": "wontfix"
+  },
+  "repos": {
+    "api": {
+      "path": "pitchINAPI",
+      "default_branch": "staging_v8",
+      "code_gate": "dotnet test",
+      "serve": "dotnet run --project Presentation/PitchIn.DigitalRegistry.Api --urls https://localhost:44311",
+      "ports": [44311]
+    },
+    "admin": {
+      "path": "PitchinAdminWeb",
+      "default_branch": "staging",
+      "code_gate": "ng build",
+      "serve": "npm start",
+      "ports": [4201]
+    },
+    "customer": {
+      "path": "PitchinCustomerWeb",
+      "default_branch": "staging",
+      "code_gate": "ng build",
+      "serve": "npm start",
+      "ports": [4200]
+    }
+  },
+  "e2e": {
+    "dir": "pitchinWebTestScripts",
+    "smoke": "npm run smoke",
+    "regression": "npm run regression",
+    "note": "urls.ts targets UAT; local-stack parameterisation pending ralph adaptation"
+  }
+}

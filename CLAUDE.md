@@ -2,6 +2,8 @@
 
 This folder holds three pitchIN codebases: `pitchINAPI` (.NET API), `PitchinAdminWeb` and `PitchinCustomerWeb` (Angular). They integrate only through the API.
 
+**Operational rules and hard rules live in [AGENTS.md](AGENTS.md) — read it before making changes.** Domain vocabulary lives in [CONTEXT.md](CONTEXT.md).
+
 ## Use graphify to navigate the code
 
 A graphify knowledge graph of all three projects lives at `graphify-out/graph.json`.
