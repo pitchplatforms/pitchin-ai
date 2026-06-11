@@ -1,0 +1,20 @@
+# Code repos — each engineer clones these separately
+pitchINAPI/
+PitchinAdminWeb/
+PitchinCustomerWeb/
+pitchinWebTestScripts/
+skills-and-tools/
+
+# Graphify — built locally per engineer via setup-pitchin
+graphify-out/
+
+# Ralph worktrees — ephemeral slice checkouts
+ralph/
+
+# Local Claude Code tooling & session data
+.claude/
+
+# Ad-hoc working folders
+asset-servicing-product/
+codebase-architecture-review/
+CTO_CHECKIN.html
