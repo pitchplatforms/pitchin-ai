@@ -32,7 +32,8 @@ Exact commands per tier (strategy and blind-spot map live in [docs/testing/qa-pl
 
 | Tier | Run | Notes |
 |---|---|---|
-| API unit | `dotnet test Tests/PitchIn.DigitalRegistry.Api.Test --nologo` then `dotnet test Tests/PitchIn.FileUploadService.Test --nologo` (from `pitchINAPI/`) | **Never bare `dotnet test` at repo root** — `PitchIn.sln` includes the dormant `PitchIn.IntegrationTest.Test` (needs a live Postgres + seeded login + missing `appsettings.Testing.json`); it will fail or hang. Requires the **.NET 10 SDK** (runtime alone is not enough). |
+| API build | `dotnet build Presentation/PitchIn.DigitalRegistry.Api --nologo` (from `pitchINAPI/`) | Requires the **.NET 10 SDK** (runtime alone is not enough). |
+| API unit | `dotnet test Tests/PitchIn.FileUploadService.Test --nologo` (from `pitchINAPI/`) | ⛔ `Tests/PitchIn.DigitalRegistry.Api.Test` is **quarantined — baseline-red 632/1196** (qa-plan.md Open gaps #1); do not run it as a gate and never "fix" its reds by weakening assertions. **Never bare `dotnet test` at repo root** — `PitchIn.sln` includes the dormant `PitchIn.IntegrationTest.Test` (needs a live Postgres + seeded login + missing `appsettings.Testing.json`). |
 | FE build | `ng build` in `PitchinAdminWeb/` and in `PitchinCustomerWeb/` | Compilation only — both apps have `"test": ""`; there is no FE unit tier. |
 | e2e smoke | `npm run smoke` in `pitchinWebTestScripts/` | Targets **UAT** (`utils/urls.ts`), `headless: false` → attended desktop session required. Run conditional on the issue's `needs:e2e` label. |
 | e2e full | `npm run regression` in `pitchinWebTestScripts/` | Periodic / pre-release, vs UAT, attended. |

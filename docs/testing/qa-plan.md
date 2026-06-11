@@ -13,7 +13,7 @@
 
 | Tier | Command | Catches | Blind to |
 |---|---|---|---|
-| API unit (xUnit + Moq) | `dotnet test Tests/PitchIn.DigitalRegistry.Api.Test` + `Tests/PitchIn.FileUploadService.Test` | controller wiring/regressions against mocked services; JWT handler smoke | everything real: DB, schema, auth pipeline, serialization, all service-layer logic (services are mocked) |
+| API unit (xUnit + Moq) | `dotnet test Tests/PitchIn.FileUploadService.Test` ✅ (5/5) · `Tests/PitchIn.DigitalRegistry.Api.Test` ⛔ **QUARANTINED — baseline-red 632/1196** (verified 2026-06-12; see Open gaps #1) | controller wiring/regressions against mocked services; JWT handler smoke | everything real: DB, schema, auth pipeline, serialization, all service-layer logic (services are mocked) |
 | API integration (TestServer) | **DORMANT** — in `.sln` but needs a live Postgres, a seeded investor login, and a missing `appsettings.Testing.json`; teardown is commented out | (when revived: schema contracts, authed request path) | not a tier until revived — do **not** count it as coverage |
 | FE build ×2 | `ng build` in `PitchinAdminWeb/` and `PitchinCustomerWeb/` | compile/type/template errors | **all** runtime behaviour — there is no FE unit tier |
 | e2e (Playwright, 8 journeys) | `npm run smoke` / `npm run regression` in `pitchinWebTestScripts/` | renders-but-broken on real journeys: login, ECF/TCF application + investment, wallet, PSTX trade, admin-login-as-user | **local changes** — `utils/urls.ts` hardcodes `https://uat.pitchin.dev`; also `headless: false` → needs an attended desktop session |
@@ -27,7 +27,8 @@ Cell values: `RUNS` = executes **and** is enforced as a gate · `LOCAL-ONLY` = r
 
 | Tier ↓ / Env → | local machine | loop gate (per-iteration) | UAT | prod |
 |---|---|---|---|---|
-| API unit | LOCAL-ONLY ⚠ (this agent machine lacks the .NET 10 SDK — see Open gaps #1) | intended RUNS | — | — |
+| API unit (FileUploadService) | RUNS (verified green 2026-06-12) | intended RUNS | — | — |
+| API unit (Api.Test) | BLOCKED — baseline-red, quarantined until repaired | BLOCKED | — | — |
 | API integration | BLOCKED (dormant) | BLOCKED | — | — |
 | FE build ×2 | RUNS (on demand) | intended RUNS | — | — |
 | e2e Playwright | BLOCKED for local changes (targets UAT only) | BLOCKED until `urls.ts` is parameterised + headless (Bucket 5) | LOCAL-ONLY (manual, attended) | BLOCKED |
@@ -72,8 +73,9 @@ Cell values: `RUNS` = executes **and** is enforced as a gate · `LOCAL-ONLY` = r
 
 ## Open gaps (ranked — bootstrap findings, 2026-06-12)
 
-1. **This machine cannot run any .NET gate** — main projects target `net10.0`; only the .NET 8 *runtime* is installed (no SDK). Until the .NET 10 SDK is installed, `dotnet test` and `dotnet run` fail outright and the API tier is theater. *Close: install .NET 10 SDK; verify the two unit projects pass; record result here.*
-2. **`dotnet test` at repo root would run the dormant integration suite** (it's in `PitchIn.sln`) and fail/hang without a DB. *Close: loop gate targets the two unit projects explicitly (now in AGENTS.md).*
+1. **`PitchIn.DigitalRegistry.Api.Test` is baseline-red: 632/1196 fail** (verified 2026-06-12, .NET 10 SDK 10.0.301). Two failure classes: (a) `UsersControllerTests` mocks the **concrete** `ClickUpService` (no parameterless ctor → every test in the class throws in its constructor — fix: extract/mock an interface); (b) `ECFControllerTests` + Admin/SuperAdmin classes hit `NullReferenceException` **inside the controllers** (e.g. `ECFController.cs:1254`) — controllers evolved, mock setups were never maintained, no CI noticed. **Quarantined: must not be a loop gate until repaired** — a baseline-red gate trains the loop to ignore red. Interim API gate = build + `FileUploadService.Test`. *Close: repair both classes; re-baseline green; un-quarantine here and in AGENTS.md.*
+2. **`dotnet test` at repo root would run the dormant integration suite** (it's in `PitchIn.sln`) and fail/hang without a DB. *Close: loop gate targets unit projects explicitly (now in AGENTS.md).*
+   *(Resolved 2026-06-12: this machine previously had no .NET SDK at all — .NET 10 SDK 10.0.301 now installed; `setup-pitchin` (Bucket 6) must install it for new machines.)*
 3. **e2e cannot see local changes** — `urls.ts` hardcodes UAT; `headless: false` blocks unattended runs. A slice can pass every loop gate with a broken UI. *Close: Bucket 5 parameterises `urls.ts` (env var) + headless profile.*
 4. **No CI pipeline anywhere** — every tier is LOCAL-ONLY until ralph's in-loop gates exist (Bucket 5) or a pipeline is added. *Close: Bucket 5; longer-term, a per-PR pipeline on the three code repos.*
 5. **FE has zero behaviour tier below e2e** — an Angular service logic bug is invisible until a UAT e2e run. *Earn it: first FE logic bug that escapes `ng build` justifies reviving Karma/Jest for the affected service (start with the duplicated services in hard rule 4).*
