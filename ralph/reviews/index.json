@@ -1,0 +1,23 @@
+{
+  "schema": "ralph-retro/index@1",
+  "runs": [
+    {
+      "log": "coordinator-20260612-173857.log",
+      "commit": "-",
+      "issue": "-",
+      "cost_usd": 0,
+      "verdict": "poor",
+      "uat_result": "untested",
+      "reviewed_at": "2026-06-13"
+    },
+    {
+      "log": "worker-1-issue-2-20260612-173857.log",
+      "commit": "-",
+      "issue": "#2",
+      "cost_usd": 0,
+      "verdict": "poor",
+      "uat_result": "untested",
+      "reviewed_at": "2026-06-13"
+    }
+  ]
+}

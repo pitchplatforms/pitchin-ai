@@ -25,6 +25,7 @@ Both Angular apps' local `environment.ts` expect the API at `https://localhost:4
 6. **Loose FE typing** — many services return `Observable<any>`. Confirm the real DTO shape in the API source before relying on a field.
 7. **Never report an AC as covered by a tier that did not run in this run's gates.** Per-PR/periodic tiers (e2e, regression) and human-only tiers don't count toward "green" on an iteration that didn't run them. Device & stochastic ACs (eKYC OCR, Gemini output, real payments) always route to human UAT. For testing/verification/gate-change tasks, consult [docs/testing/qa-plan.md](docs/testing/qa-plan.md) — it is read at triage, not on every iteration.
 8. **Never edit `pitchinWebTestScripts/`.** It is the human-authored independent evaluator tier (the oracle). An agent that can rewrite the oracle has no gate. Failing e2e ⇒ fix the app code or hand off `ready-for-human`.
+9. **Match the existing UI — never invent a design system.** Before writing any Angular UI, query graphify for existing components and reuse them. Both apps use Bootstrap 4 + Angular Material 16 with a shared `src/app/components/` library and global SCSS tokens (brand red `#bf2026`, green `#006837`, navy `#0e2b43`; Poppins headings / Inter body). Reuse those components, classes, and variables; build notifications/alerts on the existing `toasts`/`dashboard-notifications`/`alert-bar` patterns and modals on the existing modal pattern. No new palette, no bespoke CSS where a shared component exists.
 
 ## Testing gates
 
@@ -42,6 +43,7 @@ Exact commands per tier (strategy and blind-spot map live in [docs/testing/qa-pl
 
 - **Locate/understand code with graphify** — see [GRAPHIFY.md](GRAPHIFY.md) for the per-skill playbook and commands. Read stdout even on non-zero exit (truncation).
 - **Refresh the graph only via `.\refresh-graph.ps1`** — never `graphify update`/`extract` directly (parallel extractor crashes on this machine).
+- **Push needs write access on the code repos, not just `repo` token scope.** The `gh` token can carry `repo` scope yet still 403 (`Write access to repository not granted`) on `pitchINAPI`/`PitchinAdminWeb`/`PitchinCustomerWeb` if the account isn't a write collaborator. The hub (`pitchin-issues`) working does **not** imply the code repos do. Verify with `gh api /repos/pitchplatforms/<repo>/collaborators/<account>/permission`; if a push 403s, it's a collaborator-access problem to fix on GitHub, not a code/token problem.
 
 ## Known gate limitations
 

@@ -8,8 +8,11 @@ skills-and-tools/
 # Graphify — built locally per engineer via setup-pitchin
 graphify-out/
 
-# Ralph worktrees — ephemeral slice checkouts
-ralph/
+# Ralph runtime — ignore ephemeral output, keep the tracked review seeds
+ralph/logs/
+ralph/worktrees/
+ralph/reviews/archive/*
+!ralph/reviews/archive/.gitkeep
 
 # Local Claude Code tooling & session data — but share the skill config
 .claude/*
